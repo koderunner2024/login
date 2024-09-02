@@ -58,4 +58,11 @@ app.post("/validate", async (req, res) => {
   }
 });
 
+app.get("/logout", (req, res) => {
+  res.clearCookie("auth");
+  res.send(
+    "<script>alert('Logged out successfully');document.location.href='/'</script>"
+  );
+});
+
 app.listen(port);
