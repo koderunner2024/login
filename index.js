@@ -16,7 +16,7 @@ app.use(cookieParser());
 
 let database = {
   guest: "guestPW",
-  admin: "Sunset@920!",
+  admin: "FAKE_PW",
 };
 
 app.get("/", async (req, res) => {
@@ -45,7 +45,14 @@ app.post("/validate", async (req, res) => {
       throw new Error("missing required parameter");
     } else {
         if (
-          typeof database[req.body["id"]] !== "undefined" && database[req.body["id"]] === req.body["pw"]) {
+          typeof database[req.body["id"]] !== "undefined" &&
+          database[req.body["id"]] === req.body["pw"]
+        ) {
+          if (
+            req.get("User-Agent").indexOf("MSIE") > -1 ||
+            req.get("User-Agent").indexOf("Trident") > -1
+          )
+            throw new Error("IE is not supported");
           jwt = await cryptolib.generateJWT(req.body["id"], "FAKE_KEY");
           res
             .cookie("auth", jwt, {
