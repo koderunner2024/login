@@ -16,7 +16,7 @@ app.use(cookieParser());
 
 let database = {
   guest: "guestPW",
-  admin: "FAKE_PW",
+  admin: "Sunset@920!",
 };
 
 app.get("/", async (req, res) => {
@@ -40,6 +40,10 @@ app.get("/", async (req, res) => {
 
 app.post("/validate", async (req, res) => {
   try {
+    let bodyKeys = Object.keys(req.body);
+    if (bodyKeys.indexOf("id") === -1 || bodyKeys.indexOf("pw") === -1) {
+      throw new Error("missing required parameter");
+    } else {
         if (
           typeof database[req.body["id"]] !== "undefined" && database[req.body["id"]] === req.body["pw"]) {
           jwt = await cryptolib.generateJWT(req.body["id"], "FAKE_KEY");
@@ -53,7 +57,8 @@ app.post("/validate", async (req, res) => {
         } else {
           res.json({ message: "error", detail: "invalid id or password" });
         }
-    } catch (e) {
+    }
+  } catch (e) {
     console.log("error");
   }
 });
