@@ -40,10 +40,18 @@ app.get("/", async (req, res) => {
 
 app.post("/validate", async (req, res) => {
   try {
-    let bodyKeys = Object.keys(req.body);
-    if (bodyKeys.indexOf("id") === -1 || bodyKeys.indexOf("pw") === -1) {
-      throw new Error("missing required parameter");
+    let contentType = req.header("Content-Type").split(";")[0];
+    if (
+      ["multipart/form-data", "application/x-www-form-urlencoded"].indexOf(
+        contentType
+      ) === -1
+    ) {
+      throw new Error("content type not supported");
     } else {
+      let bodyKeys = Object.keys(req.body);
+      if (bodyKeys.indexOf("id") === -1 || bodyKeys.indexOf("pw") === -1) {
+        throw new Error("missing required parameter");
+      } else {
         if (
           typeof database[req.body["id"]] !== "undefined" &&
           database[req.body["id"]] === req.body["pw"]
@@ -64,7 +72,9 @@ app.post("/validate", async (req, res) => {
         } else {
           res.json({ message: "error", detail: "invalid id or password" });
         }
+      }
     }
+
   } catch (e) {
     console.log("error");
   }
